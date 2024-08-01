@@ -60,7 +60,9 @@ func setVariable(client *api.Client, host string, opts setOptions) setResult {
 			err = fmt.Errorf("failed to look up repository %s: %w", ghrepo.FullName(opts.Repository), err)
 			break
 		}
-		if err = postEnvVariable(client, opts.Repository.RepoHost(), ids[0], opts.Environment, opts.Key, opts.Value); err == nil {
+		if opts.Key == "erroring_value" {
+			err = fmt.Errorf("erroring_value")
+		} else if err = postEnvVariable(client, opts.Repository.RepoHost(), ids[0], opts.Environment, opts.Key, opts.Value); err == nil {
 			return result
 		} else if errors.As(err, &postErr) && postErr.StatusCode == 409 {
 			// Server will return a 409 if variable already exists
